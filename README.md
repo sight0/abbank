@@ -23,7 +23,6 @@ The secondary goals/conditions are the following:
         - *Salary Certificate*
         - *Creation Date*
         - *Accounts References*
-        - *Credit Score*
 - __Customers Accounts (for each account)__
     - *Account Number*
     - *Account Type*
