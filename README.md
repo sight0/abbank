@@ -32,7 +32,6 @@ The secondary goals/conditions are the following:
     - *Approval Date*
     - *Banker ID*
     - __Account Log__
-        - *Sign-in Logs*
         - *Transfer Logs*
         - *E-Statement*
     - __Account Loans (for each loan)__
