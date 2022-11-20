@@ -13,11 +13,12 @@ public class AbbankApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AbbankApplication.class, args);
 	}
+
 	@Bean
 	CommandLineRunner runner(UserService userService, UserRepository userRepository) {
 		return args -> {
-			User user = new User("saeed", "saeed@gmail.com", "123");
-			userRepository.save(user);
+
 		};
 	}
+
 }

@@ -22,11 +22,11 @@ public class Salary {
     @Id
     private String id;
     @Field(targetType = DECIMAL128)
-    private BigDecimal value;
+    private BigDecimal salaryAmount;
     private Binary salaryCertificate;
 
-    public Salary(BigDecimal value, Binary salaryCertificate) {
-        this.value = value;
+    public Salary(BigDecimal salaryAmount, Binary salaryCertificate) {
+        this.salaryAmount = salaryAmount;
         this.salaryCertificate = salaryCertificate;
     }
 }

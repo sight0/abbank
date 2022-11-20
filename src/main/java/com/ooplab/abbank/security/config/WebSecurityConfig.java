@@ -33,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(HttpMethod.POST,"/signin").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET,"/refreshToken").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.POST,"/signup").permitAll();
         http.authorizeRequests().antMatchers("/customer/**").hasAnyAuthority("customer");
         http.authorizeRequests().antMatchers("/banker/**").hasAnyAuthority("banker");
         http.authorizeRequests().anyRequest().authenticated();

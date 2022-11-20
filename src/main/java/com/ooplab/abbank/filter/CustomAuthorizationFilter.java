@@ -28,7 +28,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getServletPath().equals("/carma/signin") || request.getServletPath().equals("/carma/arc/user/refreshToken")){
+        if(request.getServletPath().equals("/signin") || request.getServletPath().equals("/refreshToken") ||
+            request.getServletPath().equals("/signup")){
             filterChain.doFilter(request, response);
         }else{
             String authorizationHeader = request.getHeader(AUTHORIZATION);
@@ -47,15 +48,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 }catch(Exception e){
-                    response.setHeader("ERROR", "403 Forbidden!");
+                    response.setHeader("Warning", "403 Forbidden!");
                     response.setStatus(FORBIDDEN.value());
                     Map<String, String> error = new HashMap<>();
-                    error.put("error_message", e.getMessage());
+                    error.put("error_message", "Invalid access token!");
                     response.setContentType(APPLICATION_JSON_VALUE);
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
             }else{
-                response.setHeader("ERROR", "403 Forbidden!");
+                response.setHeader("Warning", "403 Forbidden!");
                 response.setStatus(FORBIDDEN.value());
                 Map<String, String> error = new HashMap<>();
                 error.put("error_message", "forbidden @_@");
