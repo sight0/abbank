@@ -36,12 +36,13 @@ public class BankAccount {
     private List<Log> logs;
     @DBRef
     private List<Loan> loans;
-    private final String bankCode = "4321";
-    private final String branchCode = "1234";
+
+    private String bankCode = "4321";
+    private String branchCode = "1234";
 
     public BankAccount(String accountType) {
-        String random = String.format("%030d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
-        this.accountNumber = bankCode.concat(branchCode).concat(random);
+        String random = String.format("%030d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16)).substring(5,11);
+        this.accountNumber = bankCode + branchCode + random;
         this.accountType = accountType;
         this.accountBalance = new BigDecimal("0.0");
         this.accountDebt = new BigDecimal("0.0");

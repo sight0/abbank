@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +23,11 @@ public class BankAccountService implements BankAccountServiceINF {
     @Override
     public User getUser(String username) {
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public BankAccount getAccount(String accountNumber) {
+        return null;
     }
 
     @Override
@@ -47,13 +53,20 @@ public class BankAccountService implements BankAccountServiceINF {
         if(user == null) return "No user exists with the given username!";
         BankAccount bankAccount = new BankAccount(accountType);
         bankAccountRepository.save(bankAccount);
-        Log out = createLog(LogType.REQUEST_ACCOUNT, new String[]{username, accountType, bankAccount.getAccountNumber()});
+        user.getAccounts().add(bankAccount);
+        userRepository.save(user);
+        String fullName = String.format("Mr/s. %s %s", user.getFirstName(), user.getLastName());
+        Log out = createLog(LogType.REQUEST_ACCOUNT, new String[]{fullName, accountType, bankAccount.getAccountNumber()});
         return out.getLogMessage();
     }
 
     @Override
     public String enableAccount(String accountNumber) {
-        return null;
+        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
+        if(account == null) return "No account exists with the given account number!";
+        account.setAccountStatus("active");
+        bankAccountRepository.save(account);
+        return "Successfully enabled bank account! [Changed status -> `active`]";
     }
 
     @Override
@@ -63,16 +76,24 @@ public class BankAccountService implements BankAccountServiceINF {
 
     @Override
     public BigDecimal getDebt(String accountNumber) {
-        return null;
+        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
+        if(account == null) return BigDecimal.ZERO;
+        return account.getAccountDebt();
     }
 
     @Override
     public List<Loan> getLoans(String accountNumber) {
-        return null;
+        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
+        if(account == null) return new ArrayList<>();
+        return account.getLoans();
     }
 
     @Override
-    public String requestLoan(String accountNumber) {
+    public String requestLoan(String accountNumber, BigDecimal amounts) {
+        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
+        if(account == null) return "No account exists with the given account number!";
+        // TODO: Business logic regarding loan request eligibility
+        // Loan loan = new Loan();
         return null;
     }
 }

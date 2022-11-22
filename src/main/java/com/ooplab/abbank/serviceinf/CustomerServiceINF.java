@@ -12,7 +12,7 @@ public interface CustomerServiceINF {
     User getUser(String username);
 
     BigDecimal getDebt(String username);
-    String requestBankAccount(String username, BankAccount bankAccount);
+    String requestBankAccount(String JWT, String accountType);
 
     List<BankAccount> getBankAccounts(String username);
     List<Log> requestStatement(String username);

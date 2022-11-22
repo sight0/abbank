@@ -45,13 +45,15 @@ public class UserService implements UserDetailsService, UserServiceINF {
 
     @Override
     public String registerUser(User user) {
-        User checkUser = getUser(user.getUsername());
-        boolean usernameUsed = Objects.equals(checkUser.getUsername(), user.getUsername());
-        if(usernameUsed) return "Username is unavailable!";
+        try {
+            User checkUser = getUser(user.getUsername());
+            boolean usernameUsed = Objects.equals(checkUser.getUsername(), user.getUsername());
+            if(usernameUsed) return "Username is unavailable!";
+        }catch(NullPointerException ignored){}
 
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
+        user.setUserRole("customer");
         userRepository.save(user);
         //sendVerificationEmail(user.getEmail());
 

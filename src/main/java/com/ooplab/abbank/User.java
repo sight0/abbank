@@ -10,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
@@ -54,6 +56,9 @@ public class User implements UserDetails {
     @DBRef
     @ToString.Exclude()
     private Salary salary;
+    @DBRef
+    @ToString.Exclude()
+    private List<BankAccount> accounts = new ArrayList<>();
 
     public User(String username, String email, String password) {
         this.username = username;

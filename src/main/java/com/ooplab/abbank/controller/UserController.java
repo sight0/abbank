@@ -5,11 +5,9 @@ import com.ooplab.abbank.service.BankerService;
 import com.ooplab.abbank.service.CustomerService;
 import com.ooplab.abbank.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/")
@@ -31,8 +29,16 @@ public class UserController {
     }
 
     // Customer Service
-    //private CustomerService customerService;
+    private CustomerService customerService;
 
+    @PostMapping("/customer/requestAccount")
+    public ResponseEntity<String> requestAccount(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountType
+    ){
+        customerService.requestBankAccount(auth, accountType);
+        return ResponseEntity.ok().body("Submitted your request to open a bank account!");
+    }
 
     // Banker Service
     private BankerService bankerService;

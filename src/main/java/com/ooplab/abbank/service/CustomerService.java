@@ -1,5 +1,9 @@
 package com.ooplab.abbank.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ooplab.abbank.BankAccount;
 import com.ooplab.abbank.Log;
 import com.ooplab.abbank.User;
@@ -27,9 +31,17 @@ public class CustomerService implements CustomerServiceINF {
     }
 
     @Override
-    public String requestBankAccount(String username, BankAccount bankAccount) {
+    public String requestBankAccount(String header, String accountType) {
+        // TODO: Push Notification Logic to Bankers
+        // TODO: Possibly send email for confirmation
 
-        return null;
+        String token = header.substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("SECRET".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String username = decodedJWT.getSubject();
+
+        return bankAccountService.createAccount(username, accountType);
     }
 
     @Override
