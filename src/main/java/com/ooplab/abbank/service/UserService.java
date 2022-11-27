@@ -108,7 +108,7 @@ public class UserService implements UserDetailsService, UserServiceINF {
     }
 
     @Override
-    public void sendVerificationEmail(String email) {
+    public void sendVerificationEmail(String username) {
         //TODO: Send verification email through java mail sender
     }
 

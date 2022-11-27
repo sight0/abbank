@@ -1,9 +1,11 @@
 package com.ooplab.abbank.serviceinf;
 
 import com.ooplab.abbank.*;
+import com.ooplab.abbank.service.InSufficientFunds;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface BankAccountServiceINF {
 
@@ -12,13 +14,12 @@ public interface BankAccountServiceINF {
     BankAccount getAccount(String accountNumber);
 
     Log createLog(LogType logType, String[] logMessage);
-    List<Log> getLogs(String accountNumber);
-    List<Log> getStatement(String email, String accountNumber);
+    Map<LogType, List<String>> getStatement(BankAccount bankAccount);
 
-    String createAccount(String username, String accountType);
+    void createAccount(String username, String accountType);
 
     String enableAccount(String accountNumber);
-    String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount);
+    String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds;
 
     BigDecimal getDebt(String accountNumber);
     List<Loan> getLoans(String accountNumber);

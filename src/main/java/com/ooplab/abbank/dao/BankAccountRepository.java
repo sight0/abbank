@@ -1,8 +1,6 @@
 package com.ooplab.abbank.dao;
 
 import com.ooplab.abbank.BankAccount;
-import com.ooplab.abbank.Log;
-import com.ooplab.abbank.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

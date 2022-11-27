@@ -34,7 +34,11 @@ public class Log {
             case APPROVE_LOAN ->
                     this.logMessage = String.format("%s has approved a loan of `%s` AED to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
             case TRANSFER ->
-                    this.logMessage = String.format("%s has transferred an amount of `%s` AED from (Acc no. %s) to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2], logMessage[3]);
+                    this.logMessage = String.format("An amount of `%s` AED has been transferred from (Acc no. %s) to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
+            case DEPOSIT ->
+                    this.logMessage = String.format("%s has deposited an amount of `%s` AED to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
+            case WITHDRAW ->
+                    this.logMessage = String.format("%s has withdrawn an amount of `%s` AED from (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
             default ->
                     this.logMessage = Arrays.toString(logMessage);
         }

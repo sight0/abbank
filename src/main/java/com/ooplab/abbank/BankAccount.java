@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,9 +34,9 @@ public class BankAccount {
     private LocalDateTime approvalDate;
     private String bankerID;
     @DBRef
-    private List<Log> logs;
+    private List<Log> logs = new ArrayList<>();
     @DBRef
-    private List<Loan> loans;
+    private List<Loan> loans = new ArrayList<>();
 
     private String bankCode = "4321";
     private String branchCode = "1234";

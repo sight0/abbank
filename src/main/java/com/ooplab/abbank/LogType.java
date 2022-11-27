@@ -5,5 +5,7 @@ public enum LogType {
     REQUEST_LOAN,
     APPROVE_ACCOUNT,
     APPROVE_LOAN,
-    TRANSFER
+    TRANSFER,
+    DEPOSIT,
+    WITHDRAW
 }

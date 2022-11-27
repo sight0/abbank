@@ -19,7 +19,7 @@ public interface UserServiceINF {
     String setRole(String username, String role);
     String setEnabled(String username, Boolean enabled);
 
-    void sendVerificationEmail(String email); // TODO: implement abstract method
+    void sendVerificationEmail(String username); // TODO: implement abstract method
 
     void verifyEmail(User user); // TODO: implement abstract method
 

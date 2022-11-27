@@ -5,52 +5,99 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ooplab.abbank.BankAccount;
-import com.ooplab.abbank.Log;
+import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
+import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.CustomerServiceINF;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.math.BigInteger;
+import java.util.*;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class CustomerService implements CustomerServiceINF {
 
     private final BankAccountService bankAccountService;
+    private final UserRepository userRepository;
 
     @Override
-    public User getUser(String username) {
-        return null;
-    }
-
-    @Override
-    public BigDecimal getDebt(String username) {
-        return null;
-    }
-
-    @Override
-    public String requestBankAccount(String header, String accountType) {
-        // TODO: Push Notification Logic to Bankers
-        // TODO: Possibly send email for confirmation
-
+    public User getUser(String header) {
         String token = header.substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("SECRET".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(token);
         String username = decodedJWT.getSubject();
-
-        return bankAccountService.createAccount(username, accountType);
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     @Override
-    public List<BankAccount> getBankAccounts(String username) {
-        return null;
+    public BigDecimal getDebt(String header) {
+        List<BankAccount> accounts = getBankAccounts(header);
+        final BigDecimal[] debt = {new BigDecimal(BigInteger.ZERO)};
+        accounts.forEach((a) -> debt[0] = debt[0].add(a.getAccountDebt()));
+        return debt[0];
     }
 
     @Override
-    public List<Log> requestStatement(String username) {
-        return null;
+    public void requestBankAccount(String header, String accountType) {
+        // TODO: Push Notification Logic to Bankers
+        User user = getUser(header);
+        bankAccountService.createAccount(user.getUsername(), accountType);
+    }
+
+    @Override
+    public void transferMoney(String header, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds {
+        if(verifyOwnership(header, senderAccount)) return;
+        if(amount.compareTo(BigDecimal.ZERO) > 0)
+            bankAccountService.transferMoney(senderAccount, receiverAccount, amount);
+    }
+
+    @Override
+    public List<BankAccount> getBankAccounts(String header) {
+        User user = getUser(header);
+        List<BankAccount> accounts = user.getAccounts();
+        List<BankAccount> active = new ArrayList<>();
+        accounts.forEach((a) -> {
+            if(Objects.equals(a.getAccountStatus(), "Active")){
+                active.add(a);
+            }
+        });
+        return active;
+    }
+
+    public boolean verifyOwnership(String header, String accountNumber){
+        List<BankAccount> accounts = getBankAccounts(header);
+        final boolean[] r = {false};
+        accounts.forEach((a) ->{
+            if(a.getAccountNumber().equals(accountNumber))
+                r[0] = true;
+        });
+        return !r[0];
+    }
+
+    @Override
+    public Map<String,Map<LogType, List<String>>> requestStatement(String header, String accountNumber) {
+        Map<String,Map<LogType, List<String>>> statement = new HashMap<>();
+        if(Objects.equals(accountNumber, "")){
+            List<BankAccount> accounts = getBankAccounts(header);
+            accounts.forEach((a) -> {
+                Map<LogType, List<String>> logs = bankAccountService.getStatement(a);
+                statement.put(a.getAccountNumber(), logs);
+            });
+        }else{
+            BankAccount account = bankAccountService.getAccount(accountNumber);
+            if(verifyOwnership(header, account.getAccountNumber()))
+                statement.put("Forbidden", new HashMap<>());
+            else{
+                Map<LogType, List<String>> logs = bankAccountService.getStatement(account);
+                statement.put(account.getAccountNumber(), logs);
+            }
+        }
+        return statement;
     }
 }

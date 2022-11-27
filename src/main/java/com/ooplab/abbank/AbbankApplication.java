@@ -1,6 +1,8 @@
 package com.ooplab.abbank;
 
+import com.ooplab.abbank.dao.BankAccountRepository;
 import com.ooplab.abbank.dao.UserRepository;
+import com.ooplab.abbank.service.BankerService;
 import com.ooplab.abbank.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +17,7 @@ public class AbbankApplication {
 	}
 
 	@Bean
-	CommandLineRunner runner(UserService userService, UserRepository userRepository) {
+	CommandLineRunner runner(BankAccountRepository bankAccountRepository) {
 		return args -> {
 
 		};

@@ -6,13 +6,19 @@ import com.ooplab.abbank.dao.LogRepository;
 import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.BankAccountServiceINF;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class BankAccountService implements BankAccountServiceINF {
 
@@ -27,7 +33,7 @@ public class BankAccountService implements BankAccountServiceINF {
 
     @Override
     public BankAccount getAccount(String accountNumber) {
-        return null;
+        return bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
     }
 
     @Override
@@ -38,26 +44,33 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
-    public List<Log> getLogs(String accountNumber) {
-        return null;
+    public Map<LogType, List<String>> getStatement(BankAccount account){
+        List<String> logs = new ArrayList<>();
+        Map<LogType, List<String>> statement = new HashMap<>();
+        account.getLogs().forEach((l) -> {
+            if( l.getLogType() == LogType.DEPOSIT ||
+                l.getLogType() == LogType.TRANSFER ||
+                l.getLogType() == LogType.WITHDRAW ) {
+                logs.add(l.getLogMessage());
+                statement.put(l.getLogType(), logs);
+            }
+        });
+        return statement;
     }
 
     @Override
-    public List<Log> getStatement(String email, String accountNumber) {
-        return null;
-    }
-
-    @Override
-    public String createAccount(String username, String accountType) {
+    public void createAccount(String username, String accountType) {
         User user = getUser(username);
-        if(user == null) return "No user exists with the given username!";
+        if(user == null) return;
         BankAccount bankAccount = new BankAccount(accountType);
-        bankAccountRepository.save(bankAccount);
         user.getAccounts().add(bankAccount);
-        userRepository.save(user);
         String fullName = String.format("Mr/s. %s %s", user.getFirstName(), user.getLastName());
         Log out = createLog(LogType.REQUEST_ACCOUNT, new String[]{fullName, accountType, bankAccount.getAccountNumber()});
-        return out.getLogMessage();
+        List<Log> logs = new ArrayList<>(bankAccount.getLogs());
+        logs.add(out);
+        bankAccount.setLogs(logs);
+        bankAccountRepository.save(bankAccount);
+        userRepository.save(user);
     }
 
     @Override
@@ -70,8 +83,27 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
-    public String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount) {
-        return null;
+    public String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds{
+        BankAccount sAccount = getAccount(senderAccount);
+        BankAccount rAccount = getAccount(receiverAccount);
+        if(sAccount == null || rAccount == null) return null;
+        BigDecimal sBalance = sAccount.getAccountBalance();
+        BigDecimal diff = sBalance.subtract(amount);
+        if(diff.compareTo(BigDecimal.ZERO) < 0)
+            throw new InSufficientFunds();
+        sAccount.setAccountBalance(diff);
+        rAccount.setAccountBalance(rAccount.getAccountBalance().add(amount));
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        Log out = createLog(LogType.TRANSFER, new String[]{df.format(amount), sAccount.getAccountNumber(), rAccount.getAccountNumber()});
+        List<Log> Slogs = new ArrayList<>(sAccount.getLogs());
+        Slogs.add(out);
+        sAccount.setLogs(Slogs);
+        List<Log> Rlogs = new ArrayList<>(rAccount.getLogs());
+        Rlogs.add(out);
+        rAccount.setLogs(Rlogs);
+        bankAccountRepository.save(sAccount);
+        bankAccountRepository.save(rAccount);
+        return out.getLogMessage();
     }
 
     @Override
@@ -97,3 +129,4 @@ public class BankAccountService implements BankAccountServiceINF {
         return null;
     }
 }
+
