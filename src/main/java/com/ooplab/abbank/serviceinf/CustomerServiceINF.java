@@ -13,6 +13,8 @@ public interface CustomerServiceINF {
 
     User getUser(String JWT);
 
+    Map<String, Object> getInformation(String JWT);
+
     BigDecimal getDebt(String JWT);
     void requestBankAccount(String JWT, String accountType);
 

@@ -34,11 +34,17 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<String> registerUser(
             @RequestParam String username,
+            @RequestParam String firstname,
+            @RequestParam String lastname,
             @RequestParam String email,
             @RequestParam String password
     ){
         User user = new User(username, email, password);
+        user.setFirstName(firstname);
+        user.setLastName(lastname);
         String response = userService.registerUser(user);
+        if(response.equals("Username is unavailable!"))
+            return ResponseEntity.status(502).body(response);
         return ResponseEntity.ok().body(response);
     }
 
@@ -72,6 +78,14 @@ public class UserController {
         Map<String, String> map = new HashMap<>();
         map.put("Total Debt", df.format(debt).concat(" AED"));
         return ResponseEntity.ok().body(map);
+    }
+
+    @GetMapping(value = "/customer/getInformation", produces = "application/json")
+    public ResponseEntity<Object> getInformation(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
+    ){
+        Map<String, Object> info = customerService.getInformation(auth);
+        return ResponseEntity.ok().body(info);
     }
 
     @GetMapping(value = "/customer/requestStatement", produces = "application/json")

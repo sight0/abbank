@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
@@ -33,6 +34,29 @@ public class CustomerService implements CustomerServiceINF {
         DecodedJWT decodedJWT = verifier.verify(token);
         String username = decodedJWT.getSubject();
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public Map<String, Object>  getInformation(String JWT) {
+        Map<String, Object> information = new HashMap<>();
+        User user = getUser(JWT);
+        information.put("firstName", user.getFirstName());
+        information.put("lastName", user.getLastName());
+        information.put("email", user.getEmail());
+        information.put("numAccounts", String.valueOf(getBankAccounts(JWT).size()));
+        List<Map<String, String>> accountsInfo = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        getBankAccounts(JWT).forEach((a)->{
+            Map<String, String> account = new HashMap<>();
+            account.put("accountNumber",a.getAccountNumber());
+            account.put("accountType",a.getAccountType());
+            account.put("accountDebt",df.format(a.getAccountDebt()).concat(" AED"));
+            account.put("accountBalance",df.format(a.getAccountBalance()).concat(" AED"));
+            account.put("accountStatus",a.getAccountStatus());
+            accountsInfo.add(account);
+        });
+        information.put("accounts", accountsInfo);
+        return information;
     }
 
     @Override
