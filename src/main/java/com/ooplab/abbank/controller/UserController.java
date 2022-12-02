@@ -107,8 +107,8 @@ public class UserController {
     ) throws InSufficientFunds {
         if(amount.compareTo(BigDecimal.ZERO) <= 0)
             return ResponseEntity.badRequest().body("Invalid amount!");
-        customerService.transferMoney(auth, senderAccount, receiverAccount, amount);
-        return ResponseEntity.ok().body("Successfully transferred amount!");
+        String response = customerService.transferMoney(auth, senderAccount, receiverAccount, amount);
+        return ResponseEntity.ok().body(response);
     }
 
     // Banker Service

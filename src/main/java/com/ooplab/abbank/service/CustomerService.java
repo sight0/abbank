@@ -75,10 +75,12 @@ public class CustomerService implements CustomerServiceINF {
     }
 
     @Override
-    public void transferMoney(String header, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds {
-        if(verifyOwnership(header, senderAccount)) return;
+    public String transferMoney(String header, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds {
+        if(verifyOwnership(header, senderAccount)) return "An error occurred whilst money transfer!@";
+        String response = "";
         if(amount.compareTo(BigDecimal.ZERO) > 0)
-            bankAccountService.transferMoney(senderAccount, receiverAccount, amount);
+            response = bankAccountService.transferMoney(senderAccount, receiverAccount, amount);
+        return response;
     }
 
     @Override

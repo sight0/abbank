@@ -86,11 +86,12 @@ public class BankAccountService implements BankAccountServiceINF {
     public String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds{
         BankAccount sAccount = getAccount(senderAccount);
         BankAccount rAccount = getAccount(receiverAccount);
-        if(sAccount == null || rAccount == null) return null;
+        if(sAccount == null || rAccount == null) return "The receiver account does not exist!";
         BigDecimal sBalance = sAccount.getAccountBalance();
         BigDecimal diff = sBalance.subtract(amount);
         if(diff.compareTo(BigDecimal.ZERO) < 0)
-            throw new InSufficientFunds();
+//            throw new InSufficientFunds();
+            return "Transfer failed due to insufficient funds!";
         sAccount.setAccountBalance(diff);
         rAccount.setAccountBalance(rAccount.getAccountBalance().add(amount));
         DecimalFormat df = new DecimalFormat("#,##0.00");
