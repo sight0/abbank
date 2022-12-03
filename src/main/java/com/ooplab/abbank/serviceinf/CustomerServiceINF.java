@@ -17,6 +17,7 @@ public interface CustomerServiceINF {
 
     BigDecimal getDebt(String JWT);
     String payDebt(String JWT, String accountNumber, BigDecimal amount) throws InSufficientFunds;
+    String requestLoan(String JWT, String accountNumber, BigDecimal amount);
     void requestBankAccount(String JWT, String accountType);
 
     String transferMoney(String JWT, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds;

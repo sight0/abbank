@@ -30,7 +30,7 @@ public class Log {
             case APPROVE_ACCOUNT ->
                     this.logMessage = String.format("%s has approved to open an `%s` account. (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
             case REQUEST_LOAN ->
-                    this.logMessage = String.format("%s has requested a loan of `%s` AED to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
+                    this.logMessage = String.format("(Acc no. %s) has requested a loan of `%s` AED", logMessage[0], logMessage[1]);
             case APPROVE_LOAN ->
                     this.logMessage = String.format("%s has approved a loan of `%s` AED to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
             case TRANSFER ->

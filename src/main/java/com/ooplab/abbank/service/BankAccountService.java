@@ -2,6 +2,7 @@ package com.ooplab.abbank.service;
 
 import com.ooplab.abbank.*;
 import com.ooplab.abbank.dao.BankAccountRepository;
+import com.ooplab.abbank.dao.LoanRepository;
 import com.ooplab.abbank.dao.LogRepository;
 import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.BankAccountServiceINF;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class BankAccountService implements BankAccountServiceINF {
 
     private final LogRepository logRepository;
+    private final LoanRepository loanRepository;
     private final UserRepository userRepository;
     private final BankAccountRepository bankAccountRepository;
 
@@ -41,6 +43,11 @@ public class BankAccountService implements BankAccountServiceINF {
         Log log = new Log(logType, logMessage);
         logRepository.save(log);
         return log;
+    }
+    private Loan createLoan(BigDecimal amount) {
+        Loan loan = new Loan(amount);
+        loanRepository.save(loan);
+        return loan;
     }
 
     @Override
@@ -108,9 +115,9 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
-    public String payDebt(String accountNumber, BigDecimal amount) {
+    public String payDebt(String accountNumber, BigDecimal amount) throws InSufficientFunds {
+        transferMoney(accountNumber, "43211234828016", amount);
         BankAccount account = getAccount(accountNumber);
-        if(account == null) return "The receiver account does not exist!";
         BigDecimal debt = account.getAccountDebt();
         BigDecimal diff = debt.subtract(amount);
         account.setAccountDebt(diff);
@@ -138,12 +145,22 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
-    public String requestLoan(String accountNumber, BigDecimal amounts) {
-        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
-        if(account == null) return "No account exists with the given account number!";
+    public String requestLoan(String accountNumber, BigDecimal amount) {
+        BankAccount account = getAccount(accountNumber);
         // TODO: Business logic regarding loan request eligibility
-        // Loan loan = new Loan();
-        return null;
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        Loan loan = createLoan(amount);
+        Log out = createLog(LogType.REQUEST_LOAN, new String[]{account.getAccountNumber(), df.format(amount)});
+        List<Log> Slogs = new ArrayList<>(account.getLogs());
+        List<Loan> Sloans = new ArrayList<>(account.getLoans());
+        Slogs.add(out);
+        Sloans.add(loan);
+        account.setLogs(Slogs);
+        account.setLoans(Sloans);
+        bankAccountRepository.save(account);
+        return "Your loan request has successfully been submitted!";
     }
+
+
 }
 

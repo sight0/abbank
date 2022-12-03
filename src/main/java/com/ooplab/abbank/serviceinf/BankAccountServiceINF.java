@@ -21,7 +21,7 @@ public interface BankAccountServiceINF {
     String enableAccount(String accountNumber);
     String transferMoney(String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds;
 
-    String payDebt(String accountNumber, BigDecimal amount);
+    String payDebt(String accountNumber, BigDecimal amount) throws InSufficientFunds;
 
     BigDecimal getDebt(String accountNumber);
     List<Loan> getLoans(String accountNumber);

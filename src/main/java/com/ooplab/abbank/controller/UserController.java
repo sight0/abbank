@@ -59,6 +59,16 @@ public class UserController {
         return ResponseEntity.ok().body("Submitted your request to open a bank account!");
     }
 
+    @PostMapping("/customer/requestLoan")
+    public ResponseEntity<String> requestLoan(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber,
+            @RequestParam BigDecimal amount
+    ){
+        String response = customerService.requestLoan(auth, accountNumber, amount);
+        return ResponseEntity.ok().body(response);
+    }
+
     @GetMapping(value = "/customer/getAccounts", produces = "application/json")
     public ResponseEntity<Object> getAccounts(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
