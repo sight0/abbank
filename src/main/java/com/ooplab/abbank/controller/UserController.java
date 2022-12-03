@@ -80,6 +80,16 @@ public class UserController {
         return ResponseEntity.ok().body(map);
     }
 
+    @PostMapping(value = "/customer/payDebt", produces = "application/json")
+    public ResponseEntity<Object> payDebt(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber,
+            @RequestParam BigDecimal amount
+    ) throws InSufficientFunds {
+        String response = customerService.payDebt(auth, accountNumber, amount);
+        return ResponseEntity.ok().body(response);
+    }
+
     @GetMapping(value = "/customer/getInformation", produces = "application/json")
     public ResponseEntity<Object> getInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth

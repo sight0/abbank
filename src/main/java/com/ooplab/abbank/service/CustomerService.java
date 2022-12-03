@@ -68,6 +68,14 @@ public class CustomerService implements CustomerServiceINF {
     }
 
     @Override
+    public String payDebt(String header, String accountNumber, BigDecimal amount) throws InSufficientFunds {
+        if(verifyOwnership(header, accountNumber)) return "An error occurred whilst debt payment!";
+        List<BankAccount> accounts = getBankAccounts(header);
+        bankAccountService.transferMoney(accountNumber, "43211234828016", amount);
+        return bankAccountService.payDebt(accountNumber, amount);
+    }
+
+    @Override
     public void requestBankAccount(String header, String accountType) {
         // TODO: Push Notification Logic to Bankers
         User user = getUser(header);

@@ -108,6 +108,22 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
+    public String payDebt(String accountNumber, BigDecimal amount) {
+        BankAccount account = getAccount(accountNumber);
+        if(account == null) return "The receiver account does not exist!";
+        BigDecimal debt = account.getAccountDebt();
+        BigDecimal diff = debt.subtract(amount);
+        account.setAccountDebt(diff);
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        Log out = createLog(LogType.PAY_DEBT, new String[]{account.getAccountNumber(), df.format(amount)});
+        List<Log> Slogs = new ArrayList<>(account.getLogs());
+        Slogs.add(out);
+        account.setLogs(Slogs);
+        bankAccountRepository.save(account);
+        return out.getLogMessage();
+    }
+
+    @Override
     public BigDecimal getDebt(String accountNumber) {
         BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber).orElse(null);
         if(account == null) return BigDecimal.ZERO;

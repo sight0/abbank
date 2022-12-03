@@ -39,6 +39,8 @@ public class Log {
                     this.logMessage = String.format("%s has deposited an amount of `%s` AED to (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
             case WITHDRAW ->
                     this.logMessage = String.format("%s has withdrawn an amount of `%s` AED from (Acc no. %s)", logMessage[0], logMessage[1], logMessage[2]);
+            case PAY_DEBT ->
+                    this.logMessage = String.format("(Acc no. %s) has paid debt with an amount of `%s` AED", logMessage[0], logMessage[1]);
             default ->
                     this.logMessage = Arrays.toString(logMessage);
         }
