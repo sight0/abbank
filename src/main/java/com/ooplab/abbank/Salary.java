@@ -25,8 +25,7 @@ public class Salary {
     private BigDecimal salaryAmount;
     private Binary salaryCertificate;
 
-    public Salary(BigDecimal salaryAmount, Binary salaryCertificate) {
-        this.salaryAmount = salaryAmount;
+    public Salary(Binary salaryCertificate) {
         this.salaryCertificate = salaryCertificate;
     }
 }

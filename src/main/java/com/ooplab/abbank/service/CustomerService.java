@@ -11,6 +11,7 @@ import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.CustomerServiceINF;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,7 +25,9 @@ import java.util.*;
 public class CustomerService implements CustomerServiceINF {
 
     private final BankAccountService bankAccountService;
+    private final UserService userService;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public User getUser(String header) {
@@ -77,8 +80,7 @@ public class CustomerService implements CustomerServiceINF {
     @Override
     public String requestLoan(String header, String accountNumber, BigDecimal amount) {
         if(verifyOwnership(header, accountNumber)) return "An error occurred whilst loan request!";
-        String response = bankAccountService.requestLoan(accountNumber, amount);
-        return response;
+        return bankAccountService.requestLoan(accountNumber, amount);
     }
 
     @Override
@@ -95,6 +97,22 @@ public class CustomerService implements CustomerServiceINF {
         if(amount.compareTo(BigDecimal.ZERO) > 0)
             response = bankAccountService.transferMoney(senderAccount, receiverAccount, amount);
         return response;
+    }
+
+    @Override
+    public String editProfile(String header, String mail, String pin, String password) {
+        User user = getUser(header);
+        if(mail != null){
+            user.setEmail(mail);
+            userRepository.save(user);
+        }
+        if(password != null){
+            userService.setPassword(user.getUsername(), password);
+        }
+        if(pin != null){
+            userService.setPin(user.getUsername(), pin);
+        }
+        return "Successfully edited profile!";
     }
 
     @Override
@@ -119,6 +137,8 @@ public class CustomerService implements CustomerServiceINF {
         });
         return !r[0];
     }
+
+
 
     @Override
     public Map<String,List<Map<String, String>>> requestStatement(String header, String accountNumber) {

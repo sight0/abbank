@@ -100,6 +100,17 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PostMapping(value = "/customer/editProfile", produces = "application/json")
+    public ResponseEntity<Object> editProfile(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String pin,
+            @RequestParam(required = false) String password
+    ) {
+        String response = customerService.editProfile(auth, email, pin, password);
+        return ResponseEntity.ok().body(response);
+    }
+
     @GetMapping(value = "/customer/getInformation", produces = "application/json")
     public ResponseEntity<Object> getInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
