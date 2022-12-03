@@ -113,7 +113,8 @@ public class UserController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam(required = false) String accountNumber
     ){
-        Map<String,Map<LogType, List<String>>> logs;
+//        Map<String,Map<LogType, List<String>>> logs;
+        Map<String,List<Map<String, String>>> logs;
         logs = customerService.requestStatement(auth, Objects.requireNonNullElse(accountNumber, ""));
         return ResponseEntity.ok().body(logs);
     }

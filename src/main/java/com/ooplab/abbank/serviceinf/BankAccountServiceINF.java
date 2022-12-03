@@ -14,7 +14,7 @@ public interface BankAccountServiceINF {
     BankAccount getAccount(String accountNumber);
 
     Log createLog(LogType logType, String[] logMessage);
-    Map<LogType, List<String>> getStatement(BankAccount bankAccount);
+    List<Map<String, String>> getStatement(BankAccount bankAccount);
 
     void createAccount(String username, String accountType);
 

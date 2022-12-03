@@ -121,20 +121,20 @@ public class CustomerService implements CustomerServiceINF {
     }
 
     @Override
-    public Map<String,Map<LogType, List<String>>> requestStatement(String header, String accountNumber) {
-        Map<String,Map<LogType, List<String>>> statement = new HashMap<>();
+    public Map<String,List<Map<String, String>>> requestStatement(String header, String accountNumber) {
+        Map<String,List<Map<String, String>>> statement = new HashMap<>();
         if(Objects.equals(accountNumber, "")){
             List<BankAccount> accounts = getBankAccounts(header);
             accounts.forEach((a) -> {
-                Map<LogType, List<String>> logs = bankAccountService.getStatement(a);
+                List<Map<String, String>> logs = bankAccountService.getStatement(a);
                 statement.put(a.getAccountNumber(), logs);
             });
         }else{
             BankAccount account = bankAccountService.getAccount(accountNumber);
             if(verifyOwnership(header, account.getAccountNumber()))
-                statement.put("Forbidden", new HashMap<>());
+                statement.put("Forbidden", new ArrayList<>());
             else{
-                Map<LogType, List<String>> logs = bankAccountService.getStatement(account);
+                List<Map<String, String>> logs = bankAccountService.getStatement(account);
                 statement.put(account.getAccountNumber(), logs);
             }
         }

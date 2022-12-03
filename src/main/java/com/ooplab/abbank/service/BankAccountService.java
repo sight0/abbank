@@ -51,15 +51,19 @@ public class BankAccountService implements BankAccountServiceINF {
     }
 
     @Override
-    public Map<LogType, List<String>> getStatement(BankAccount account){
-        List<String> logs = new ArrayList<>();
-        Map<LogType, List<String>> statement = new HashMap<>();
+    public List<Map<String, String>> getStatement(BankAccount account){
+        List<Map<String, String>> statement = new ArrayList<>();
         account.getLogs().forEach((l) -> {
             if( l.getLogType() == LogType.DEPOSIT ||
                 l.getLogType() == LogType.TRANSFER ||
-                l.getLogType() == LogType.WITHDRAW ) {
-                logs.add(l.getLogMessage());
-                statement.put(l.getLogType(), logs);
+                l.getLogType() == LogType.WITHDRAW ||
+                l.getLogType() == LogType.PAY_DEBT ||
+                l.getLogType() == LogType.APPROVE_LOAN) {
+                Map<String, String> map = new HashMap<>();
+                map.put("logType", l.getLogType().toString());
+                map.put("logDate", l.getLogDate().toString());
+                map.put("logMessage", l.getLogMessage());
+                statement.add(map);
             }
         });
         return statement;

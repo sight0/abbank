@@ -23,5 +23,5 @@ public interface CustomerServiceINF {
     String transferMoney(String JWT, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds;
 
     List<BankAccount> getBankAccounts(String JWT);
-    Map<String,Map<LogType, List<String>>> requestStatement(String JWT, String accountNumber);
+    Map<String,List<Map<String, String>>> requestStatement(String JWT, String accountNumber);
 }
