@@ -228,6 +228,15 @@ public class UserController {
         return ResponseEntity.ok().body("Approved!");
     }
 
+    @PostMapping(value = "/banker/payInterest", produces = "application/json")
+    public ResponseEntity<Object> payInterest(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String interestAmount
+    ){
+        bankerService.payInterest(auth, interestAmount);
+        return ResponseEntity.ok().body("Approved!");
+    }
+
     @GetMapping(value = "/banker/getNotifications", produces = "application/json")
     public ResponseEntity<Object> getNotifications(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth

@@ -13,6 +13,7 @@ import com.ooplab.abbank.serviceinf.BankerServiceINF;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -131,8 +132,8 @@ public class BankerService implements BankerServiceINF {
                 r.put("loanAmount", loan.getLoanAmount().toString());
                 r.put("loanDate", loan.getCreationDate().toString());
                 r.put("loanID", loan.getId());
+                statement.add(r);
             }
-            statement.add(r);
         });
         return statement;
     }
@@ -169,6 +170,18 @@ public class BankerService implements BankerServiceINF {
                 bankAccountRepository.save(account);
             }
         });
+    }
+
+    public void payInterest(String auth, String interestRate) {
+        List<BankAccount> accounts = bankAccountRepository.findAll();
+        accounts.forEach((a) -> {
+            if (a.getAccountType().equals("saving")) {
+                BigDecimal rate = new BigDecimal(interestRate);
+                BigDecimal interest = a.getAccountBalance().multiply(rate);
+                a.setAccountBalance(a.getAccountBalance().add(interest));
+                bankAccountRepository.save(a);
+            }
+            });
     }
 
     public List<Map<String,String>> getNotifications() {
