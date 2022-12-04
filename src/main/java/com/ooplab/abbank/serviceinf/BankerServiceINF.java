@@ -5,6 +5,9 @@ import com.ooplab.abbank.Log;
 import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
 
+import java.util.List;
+import java.util.Map;
+
 public interface BankerServiceINF {
     //User getUser(String username);
     BankAccount getBankAccount(String accountNumber);
@@ -13,7 +16,8 @@ public interface BankerServiceINF {
     String approveBankAccounts(String JWT, String accountNumber);
     //String approveLoan(Loan loan);
 
-    //List<BankAccounts> getBankAccounts(String username);
+    List<Map<String,String>> getAccountsByName(String JWT, String fullname);
+    Map<String, String> getAccountByNumber(String JWT, String number);
     //String holdBankAccount(BankAccount bankAccount);
     //List<Log> getBankAccountLog(BankAccount bankAccount);
 

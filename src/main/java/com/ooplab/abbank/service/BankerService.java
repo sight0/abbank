@@ -15,7 +15,9 @@ import com.ooplab.abbank.serviceinf.BankerServiceINF;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +25,7 @@ public class BankerService implements BankerServiceINF {
 
     private final BankAccountRepository bankAccountRepository;
     private final LogRepository logRepository;
+    private final CustomerService customerService;
     private final UserRepository userRepository;
 
     @Override
@@ -58,5 +61,50 @@ public class BankerService implements BankerServiceINF {
         account.getLogs().add(out);
         bankAccountRepository.save(account);
         return out.getLogMessage();
+    }
+
+    @Override
+    public List<Map<String, String>> getAccountsByName(String header, String fullname) {
+        String firstname = fullname.split("\\s+")[0];
+        String lastname = fullname.split("\\s+")[1];
+        User user = userRepository.findByFirstNameAndLastName(firstname, lastname).orElse(null);
+        if(user == null)
+            return new ArrayList<>();
+        List<BankAccount> accounts = user.getAccounts();
+        if(accounts.size()==0)
+            return new ArrayList<>();
+        List<Map<String, String>> active = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        accounts.forEach((a) -> {
+            if(Objects.equals(a.getAccountStatus(), "Active")){
+                Map<String, String> account = new HashMap<>();
+                account.put("accountNumber", a.getAccountNumber());
+                account.put("accountType", a.getAccountType());
+                account.put("accountBalance", df.format(a.getAccountBalance()).concat(" AED"));
+                account.put("accountDebt", df.format(a.getAccountDebt()).concat(" AED"));
+                account.put("accountApproval", a.getApprovalDate().toString());
+                account.put("accountCreation", a.getCreationDate().toString());
+                account.put("bankerSignature", a.getBankerID());
+                active.add(account);
+            }
+        });
+        return active;
+    }
+
+    @Override
+    public Map<String, String> getAccountByNumber(String header, String number) {
+        BankAccount Baccount = bankAccountRepository.findByAccountNumber(number).orElse(null);
+        if(Baccount==null||!Baccount.getAccountStatus().equals("Active"))
+            return new HashMap<>();
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        Map<String, String> account = new HashMap<>();
+        account.put("accountNumber", Baccount.getAccountNumber());
+        account.put("accountType", Baccount.getAccountType());
+        account.put("accountBalance", df.format(Baccount.getAccountBalance()).concat(" AED"));
+        account.put("accountDebt", df.format(Baccount.getAccountDebt()).concat(" AED"));
+        account.put("accountApproval", Baccount.getApprovalDate().toString());
+        account.put("accountCreation", Baccount.getCreationDate().toString());
+        account.put("bankerSignature", Baccount.getBankerID());
+        return account;
     }
 }

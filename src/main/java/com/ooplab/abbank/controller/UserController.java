@@ -171,4 +171,23 @@ public class UserController {
         return ResponseEntity.ok().body("Successfully approved account!");
     }
 
+
+    @GetMapping(value = "/banker/getAccountsByName", produces = "application/json")
+    public ResponseEntity<Object> getAccountsByName(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String fullname
+    ){
+        List<Map<String, String>> accounts = bankerService.getAccountsByName(auth, fullname);
+        return ResponseEntity.ok().body(accounts);
+    }
+
+    @GetMapping(value = "/banker/getAccountsByAccount", produces = "application/json")
+    public ResponseEntity<Object> getAccountByNumber(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String number
+    ){
+        Map<String, String> accounts = bankerService.getAccountByNumber(auth, number);
+        return ResponseEntity.ok().body(accounts);
+    }
+
 }
