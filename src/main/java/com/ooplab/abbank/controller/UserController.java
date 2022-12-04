@@ -187,15 +187,35 @@ public class UserController {
         Map<String, String> accounts = bankerService.getAccountByNumber(auth, number);
         return ResponseEntity.ok().body(accounts);
     }
+
     @GetMapping(value = "/banker/requestStatement", produces = "application/json")
     public ResponseEntity<Object> requestStatementBanker(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam String accountNumber
     ){
-//        Map<String,Map<LogType, List<String>>> logs;
         List<Map<String, String>> logs = new ArrayList<>();
         logs = bankerService.requestStatement(auth, accountNumber);
         return ResponseEntity.ok().body(logs);
+    }
+
+    @GetMapping(value = "/banker/getLoans", produces = "application/json")
+    public ResponseEntity<Object> getLoans(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber
+    ){
+        List<Map<String, String>> logs = new ArrayList<>();
+        logs = bankerService.getLoans(accountNumber);
+        return ResponseEntity.ok().body(logs);
+    }
+
+    @PostMapping(value = "/banker/approveLoan", produces = "application/json")
+    public ResponseEntity<Object> getLoans(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber,
+            @RequestParam String loanDate
+    ){
+        bankerService.approveLoan(auth, accountNumber, loanDate);
+        return ResponseEntity.ok().body("Approved!");
     }
 
 }

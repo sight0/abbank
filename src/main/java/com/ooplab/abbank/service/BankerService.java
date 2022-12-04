@@ -9,6 +9,7 @@ import com.ooplab.abbank.Log;
 import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
 import com.ooplab.abbank.dao.BankAccountRepository;
+import com.ooplab.abbank.dao.LoanRepository;
 import com.ooplab.abbank.dao.LogRepository;
 import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.BankerServiceINF;
@@ -26,6 +27,7 @@ public class BankerService implements BankerServiceINF {
     private final BankAccountRepository bankAccountRepository;
     private final BankAccountService bankAccountService;
     private final LogRepository logRepository;
+    private final LoanRepository loanRepository;
     private final CustomerService customerService;
     private final UserRepository userRepository;
 
@@ -59,7 +61,9 @@ public class BankerService implements BankerServiceINF {
         account.setAccountStatus("Active");
         account.setApprovalDate(LocalDateTime.now());
         Log out = createLog(LogType.APPROVE_ACCOUNT, new String[]{getBankerInfo(header), account.getAccountType(), account.getAccountNumber()});
-        account.getLogs().add(out);
+        List<Log> logs = account.getLogs();
+        logs.add(out);
+        account.setLogs(logs);
         bankAccountRepository.save(account);
         return out.getLogMessage();
     }
@@ -119,6 +123,40 @@ public class BankerService implements BankerServiceINF {
             statement.add(r);
         });
         return statement;
+    }
+
+    public List<Map<String, String>> getLoans(String accountNumber) {
+        List<Map<String, String>> statement = new ArrayList<>();
+        BankAccount account = bankAccountService.getAccount(accountNumber);
+        account.getLoans().forEach((loan) -> {
+            Map<String, String> r = new HashMap<>();
+            if(loan.getLoanStatus().equals("Pending")){
+                r.put("loanAmount", loan.getLoanAmount().toString());
+                r.put("loanDate", loan.getCreationDate().toString());
+            }
+            statement.add(r);
+        });
+        return statement;
+    }
+
+    public void approveLoan(String auth, String accountNumber, String loanDate) {
+        User user = customerService.getUser(auth);
+        BankAccount account = bankAccountService.getAccount(accountNumber);
+        account.getLoans().forEach((loan) -> {
+            if(loan.toString().equals(loanDate)){
+                loan.setApprovalDate(LocalDateTime.now());
+                loan.setLoanStatus("Active");
+                loan.setBankerSignature(String.format("[BANKER %s | ID - %S]",user.getUsername(), user.getId()));
+                loanRepository.save(loan);
+                account.setAccountBalance(account.getAccountBalance().add(loan.getLoanAmount()));
+                account.setAccountDebt(account.getAccountDebt().add(loan.getLoanAmount()));
+                Log out = createLog(LogType.APPROVE_LOAN, new String[]{getBankerInfo(auth), loan.getLoanAmount().toString(), account.getAccountNumber()});
+                List<Log> logs = account.getLogs();
+                logs.add(out);
+                account.setLogs(logs);
+                bankAccountRepository.save(account);
+            }
+        });
     }
 
 
