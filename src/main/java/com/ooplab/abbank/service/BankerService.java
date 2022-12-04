@@ -69,6 +69,7 @@ public class BankerService implements BankerServiceINF {
     @Override
     public List<Map<String, String>> getAccountsByName(String header, String firstname, String lastname) {
         User user = userRepository.findByFirstNameAndLastName(firstname, lastname).orElse(null);
+        User banker = customerService.getUser(header);
         if(user == null)
             return new ArrayList<>();
         List<BankAccount> accounts = user.getAccounts();
@@ -85,7 +86,7 @@ public class BankerService implements BankerServiceINF {
                 account.put("accountDebt", df.format(a.getAccountDebt()).concat(" AED"));
                 account.put("accountApproval", a.getApprovalDate().toString());
                 account.put("accountCreation", a.getCreationDate().toString());
-                account.put("bankerSignature", a.getBankerID());
+                account.put("bankerSignature", String.format("[BANKER %s %s | ID %s]", banker.getFirstName(), banker.getLastName(), banker.getId()));
                 active.add(account);
             }
         });
@@ -94,6 +95,7 @@ public class BankerService implements BankerServiceINF {
 
     @Override
     public Map<String, String> getAccountByNumber(String header, String number) {
+        User user = customerService.getUser(header);
         BankAccount Baccount = bankAccountRepository.findByAccountNumber(number).orElse(null);
         if(Baccount==null||!Baccount.getAccountStatus().equals("Active"))
             return new HashMap<>();
@@ -105,7 +107,7 @@ public class BankerService implements BankerServiceINF {
         account.put("accountDebt", df.format(Baccount.getAccountDebt()).concat(" AED"));
         account.put("accountApproval", Baccount.getApprovalDate().toString());
         account.put("accountCreation", Baccount.getCreationDate().toString());
-        account.put("bankerSignature", Baccount.getBankerID());
+        account.put("bankerSignature", String.format("[BANKER %s %s | ID %s]", user.getFirstName(), user.getLastName(), user.getId()));
         return account;
     }
 

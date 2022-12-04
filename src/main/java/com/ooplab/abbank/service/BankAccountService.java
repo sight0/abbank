@@ -120,7 +120,7 @@ public class BankAccountService implements BankAccountServiceINF {
 
     @Override
     public String payDebt(String accountNumber, BigDecimal amount) throws InSufficientFunds {
-        transferMoney(accountNumber, "43211234828016", amount);
+        transferMoney(accountNumber, "43211234115312", amount);
         BankAccount account = getAccount(accountNumber);
         BigDecimal debt = account.getAccountDebt();
         BigDecimal diff = debt.subtract(amount);
