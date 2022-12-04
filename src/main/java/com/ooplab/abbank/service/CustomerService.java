@@ -8,6 +8,8 @@ import com.ooplab.abbank.BankAccount;
 import com.ooplab.abbank.Log;
 import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
+import com.ooplab.abbank.dao.BankAccountRepository;
+import com.ooplab.abbank.dao.LogRepository;
 import com.ooplab.abbank.dao.UserRepository;
 import com.ooplab.abbank.serviceinf.CustomerServiceINF;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,8 @@ public class CustomerService implements CustomerServiceINF {
     private final BankAccountService bankAccountService;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final LogRepository logRepository;
+    private final BankAccountRepository bankAccountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -143,9 +147,11 @@ public class CustomerService implements CustomerServiceINF {
             accountLogs.forEach((log)->{
                 if(log.isLogEnabled()){
                     log.setLogEnabled(false);
+                    logRepository.save(log);
                 }
             });
             a.setLogs(accountLogs);
+            bankAccountRepository.save(a);
         });
     }
 

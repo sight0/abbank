@@ -128,8 +128,7 @@ public class UserController {
         return ResponseEntity.ok().body(notification);
     }
 
-
-    @GetMapping(value = "/customer/seeNotification", produces = "application/json")
+    @PostMapping(value = "/customer/seeNotifications", produces = "application/json")
     public ResponseEntity<Object> seeNotifications(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
     ){
