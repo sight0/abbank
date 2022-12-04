@@ -133,17 +133,18 @@ public class BankerService implements BankerServiceINF {
             if(loan.getLoanStatus().equals("Pending")){
                 r.put("loanAmount", loan.getLoanAmount().toString());
                 r.put("loanDate", loan.getCreationDate().toString());
+                r.put("loanID", loan.getId());
             }
             statement.add(r);
         });
         return statement;
     }
 
-    public void approveLoan(String auth, String accountNumber, String loanDate) {
+    public void approveLoan(String auth, String accountNumber, String loanID) {
         User user = customerService.getUser(auth);
         BankAccount account = bankAccountService.getAccount(accountNumber);
         account.getLoans().forEach((loan) -> {
-            if(loan.toString().equals(loanDate)){
+            if(loan.getId().equals(loanID)){
                 loan.setApprovalDate(LocalDateTime.now());
                 loan.setLoanStatus("Active");
                 loan.setBankerSignature(String.format("[BANKER %s | ID - %S]",user.getUsername(), user.getId()));

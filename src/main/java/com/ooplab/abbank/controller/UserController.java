@@ -209,12 +209,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/banker/approveLoan", produces = "application/json")
-    public ResponseEntity<Object> getLoans(
+    public ResponseEntity<Object> approveLoan(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
             @RequestParam String accountNumber,
-            @RequestParam String loanDate
+            @RequestParam String loanID
     ){
-        bankerService.approveLoan(auth, accountNumber, loanDate);
+        bankerService.approveLoan(auth, accountNumber, loanID);
         return ResponseEntity.ok().body("Approved!");
     }
 
