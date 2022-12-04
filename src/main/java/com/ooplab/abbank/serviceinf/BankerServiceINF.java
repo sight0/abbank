@@ -18,6 +18,9 @@ public interface BankerServiceINF {
 
     List<Map<String,String>> getAccountsByName(String JWT, String firstName, String lastName);
     Map<String, String> getAccountByNumber(String JWT, String number);
+
+    List<Map<String, String>> requestStatement(String JWT, String accountNumber);
+
     //String holdBankAccount(BankAccount bankAccount);
     //List<Log> getBankAccountLog(BankAccount bankAccount);
 

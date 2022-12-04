@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "/")
@@ -189,6 +186,17 @@ public class UserController {
     ){
         Map<String, String> accounts = bankerService.getAccountByNumber(auth, number);
         return ResponseEntity.ok().body(accounts);
+    }
+    @GetMapping(value = "/banker/requestStatement", produces = "application/json")
+    public ResponseEntity<Object> requestStatementBanker(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber
+    ){
+//        Map<String,Map<LogType, List<String>>> logs;
+        List<Map<String, String>> logs = new ArrayList<>();
+        if(!accountNumber.equals(""))
+            logs = bankerService.requestStatement(auth, Objects.requireNonNullElse(accountNumber, ""));
+        return ResponseEntity.ok().body(logs);
     }
 
 }

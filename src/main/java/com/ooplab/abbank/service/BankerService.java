@@ -24,6 +24,7 @@ import java.util.*;
 public class BankerService implements BankerServiceINF {
 
     private final BankAccountRepository bankAccountRepository;
+    private final BankAccountService bankAccountService;
     private final LogRepository logRepository;
     private final CustomerService customerService;
     private final UserRepository userRepository;
@@ -105,4 +106,22 @@ public class BankerService implements BankerServiceINF {
         account.put("bankerSignature", Baccount.getBankerID());
         return account;
     }
+
+    @Override
+    public List<Map<String, String>> requestStatement(String header, String accountNumber) {
+        List<Map<String, String>> statement = new ArrayList<>();
+        if(Objects.equals(accountNumber, "")){
+            BankAccount account = bankAccountService.getAccount(accountNumber);
+            account.getLogs().forEach((log) -> {
+                Map<String, String> r = new HashMap<>();
+                r.put("logType", log.getLogType().toString());
+                r.put("logMessage", log.getLogMessage());
+                r.put("logDate", log.getLogDate().toString());
+                statement.add(r);
+            });
+        }
+        return statement;
+    }
+
+
 }
