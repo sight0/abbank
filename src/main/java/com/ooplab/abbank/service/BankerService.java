@@ -64,9 +64,7 @@ public class BankerService implements BankerServiceINF {
     }
 
     @Override
-    public List<Map<String, String>> getAccountsByName(String header, String fullname) {
-        String firstname = fullname.split("\\s+")[0];
-        String lastname = fullname.split("\\s+")[1];
+    public List<Map<String, String>> getAccountsByName(String header, String firstname, String lastname) {
         User user = userRepository.findByFirstNameAndLastName(firstname, lastname).orElse(null);
         if(user == null)
             return new ArrayList<>();

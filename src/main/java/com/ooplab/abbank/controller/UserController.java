@@ -175,9 +175,10 @@ public class UserController {
     @GetMapping(value = "/banker/getAccountsByName", produces = "application/json")
     public ResponseEntity<Object> getAccountsByName(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
-            @RequestParam String fullname
+            @RequestParam String firstName,
+            @RequestParam String lastName
     ){
-        List<Map<String, String>> accounts = bankerService.getAccountsByName(auth, fullname);
+        List<Map<String, String>> accounts = bankerService.getAccountsByName(auth, firstName, lastName);
         return ResponseEntity.ok().body(accounts);
     }
 
