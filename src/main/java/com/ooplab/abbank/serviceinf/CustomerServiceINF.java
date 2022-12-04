@@ -1,6 +1,7 @@
 package com.ooplab.abbank.serviceinf;
 
 import com.ooplab.abbank.BankAccount;
+import com.ooplab.abbank.Log;
 import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
 import com.ooplab.abbank.service.InSufficientFunds;
@@ -23,6 +24,9 @@ public interface CustomerServiceINF {
     String transferMoney(String JWT, String senderAccount, String receiverAccount, BigDecimal amount) throws InSufficientFunds;
 
     String editProfile(String JWT, String mail, String pin, String password);
+
+    List<Log> getNotifications(String JWT, Boolean old);
+    void seeNotifications(String JWT);
 
     List<BankAccount> getBankAccounts(String JWT);
     Map<String,List<Map<String, String>>> requestStatement(String JWT, String accountNumber);

@@ -119,6 +119,24 @@ public class UserController {
         return ResponseEntity.ok().body(info);
     }
 
+    @GetMapping(value = "/customer/getNotifications", produces = "application/json")
+    public ResponseEntity<Object> getNotifications(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam Boolean all
+    ){
+        List<Log> notification = customerService.getNotifications(auth, all);
+        return ResponseEntity.ok().body(notification);
+    }
+
+
+    @GetMapping(value = "/customer/seeNotification", produces = "application/json")
+    public ResponseEntity<Object> seeNotifications(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
+    ){
+        customerService.seeNotifications(auth);
+        return ResponseEntity.ok().body("Cleared notifications!");
+    }
+
     @GetMapping(value = "/customer/requestStatement", produces = "application/json")
     public ResponseEntity<Object> requestStatement(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,

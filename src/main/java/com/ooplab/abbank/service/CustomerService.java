@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ooplab.abbank.BankAccount;
+import com.ooplab.abbank.Log;
 import com.ooplab.abbank.LogType;
 import com.ooplab.abbank.User;
 import com.ooplab.abbank.dao.UserRepository;
@@ -113,6 +114,39 @@ public class CustomerService implements CustomerServiceINF {
             userService.setPin(user.getUsername(), pin);
         }
         return "Successfully edited profile!";
+    }
+
+    @Override
+    public List<Log> getNotifications(String header, Boolean old) {
+        User user = getUser(header);
+        List<BankAccount> accounts = user.getAccounts();
+        List<Log> all = new ArrayList<>();
+        List<Log> unseen = new ArrayList<>();
+        accounts.forEach((a) -> all.addAll(a.getLogs()));
+        all.forEach((log) -> {
+            if(log.isLogEnabled()){
+                unseen.add(log);
+            }
+        });
+        if(old) return all;
+        return unseen;
+    }
+
+    @Override
+    public void seeNotifications(String header) {
+        User user = getUser(header);
+        List<BankAccount> accounts = user.getAccounts();
+        List<Log> all = new ArrayList<>();
+        List<Log> unseen = new ArrayList<>();
+        accounts.forEach((a) -> {
+            List<Log> accountLogs = a.getLogs();
+            accountLogs.forEach((log)->{
+                if(log.isLogEnabled()){
+                    log.setLogEnabled(false);
+                }
+            });
+            a.setLogs(accountLogs);
+        });
     }
 
     @Override
