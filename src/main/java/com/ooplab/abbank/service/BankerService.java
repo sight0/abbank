@@ -4,10 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ooplab.abbank.BankAccount;
-import com.ooplab.abbank.Log;
-import com.ooplab.abbank.LogType;
-import com.ooplab.abbank.User;
+import com.ooplab.abbank.*;
 import com.ooplab.abbank.dao.BankAccountRepository;
 import com.ooplab.abbank.dao.LoanRepository;
 import com.ooplab.abbank.dao.LogRepository;
@@ -158,6 +155,44 @@ public class BankerService implements BankerServiceINF {
                 bankAccountRepository.save(account);
             }
         });
+    }
+
+    public void disproveLoan(String auth, String accountNumber, String loanID) {
+        BankAccount account = bankAccountService.getAccount(accountNumber);
+        account.getLoans().forEach((loan) -> {
+            if(loan.getId().equals(loanID)){
+                loan.setLoanStatus("Disproved");
+                List<Loan> loans = account.getLoans();
+                loans.remove(loan);
+                account.setLoans(loans);
+                loanRepository.deleteById(loanID);
+                bankAccountRepository.save(account);
+            }
+        });
+    }
+
+    public List<Map<String,String>> getNotifications() {
+        List<Map<String, String>> logs = new ArrayList<>();
+        List<BankAccount> accounts = bankAccountRepository.findAll();
+        accounts.forEach((a) -> {
+            if (a.getAccountStatus().equals("Pending")) {
+                Map<String, String> map = new HashMap<>();
+                map.put("logType", "OPEN ACCOUNT REQUEST");
+                map.put("logDate", a.getCreationDate().toString());
+                map.put("logMessage", String.format("Customer has requested to open an `%s` account. (Acc no. %s)", a.getAccountType(), a.getAccountNumber()));
+                logs.add(map);
+            }
+            a.getLoans().forEach((loan) -> {
+                if (loan.getLoanStatus().equals("Pending")) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("logType", "LOAN REQUEST");
+                    map.put("logDate", loan.getCreationDate().toString());
+                    map.put("logMessage", String.format("Customer with (Acc no. %s) has requested a loan of `%s` AED", a.getAccountNumber(), loan.getLoanAmount().toString()));
+                    logs.add(map);
+                }
+            });
+        });
+        return logs;
     }
 
 

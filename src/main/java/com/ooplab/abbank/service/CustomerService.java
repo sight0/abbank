@@ -178,8 +178,6 @@ public class CustomerService implements CustomerServiceINF {
         return !r[0];
     }
 
-
-
     @Override
     public Map<String,List<Map<String, String>>> requestStatement(String header, String accountNumber) {
         Map<String,List<Map<String, String>>> statement = new HashMap<>();

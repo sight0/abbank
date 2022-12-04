@@ -218,4 +218,22 @@ public class UserController {
         return ResponseEntity.ok().body("Approved!");
     }
 
+    @PostMapping(value = "/banker/disproveLoan", produces = "application/json")
+    public ResponseEntity<Object> disprove(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestParam String accountNumber,
+            @RequestParam String loanID
+    ){
+        bankerService.disproveLoan(auth, accountNumber, loanID);
+        return ResponseEntity.ok().body("Approved!");
+    }
+
+    @GetMapping(value = "/banker/getNotifications", produces = "application/json")
+    public ResponseEntity<Object> getNotifications(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
+    ){
+        List<Map<String,String>> notifications = bankerService.getNotifications();
+        return ResponseEntity.ok().body(notifications);
+    }
+
 }
