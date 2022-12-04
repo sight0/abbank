@@ -194,8 +194,7 @@ public class UserController {
     ){
 //        Map<String,Map<LogType, List<String>>> logs;
         List<Map<String, String>> logs = new ArrayList<>();
-        if(!accountNumber.equals(""))
-            logs = bankerService.requestStatement(auth, Objects.requireNonNullElse(accountNumber, ""));
+        logs = bankerService.requestStatement(auth, accountNumber);
         return ResponseEntity.ok().body(logs);
     }
 
